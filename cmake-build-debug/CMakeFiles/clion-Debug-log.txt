@@ -1,0 +1,29 @@
+"C:\Program Files\JetBrains\CLion 2024.1.2\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - MinGW Makefiles" -S C:\Users\selvi\Desktop\Programming\Projects\CPP\RaylibGame -B C:\Users\selvi\Desktop\Programming\Projects\CPP\RaylibGame\cmake-build-debug
+CMake Deprecation Warning:
+  Support for "Extra Generators" like
+
+    CodeBlocks
+
+  is deprecated and will be removed from a future version of CMake.  IDEs may
+  use the cmake-file-api(7) to view CMake-generated project build trees.
+
+
+-- Populating raylib
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: C:/Users/selvi/Desktop/Programming/Projects/CPP/RaylibGame/cmake-build-debug/_deps/raylib-subbuild
+[100%] Built target raylib-populate
+-- Testing if -Werror=pointer-arith can be used -- compiles
+-- Testing if -Werror=implicit-function-declaration can be used -- compiles
+-- Testing if -fno-strict-aliasing can be used -- compiles
+-- Using raylib's GLFW
+-- Including Win32 support
+-- Audio Backend: miniaudio
+-- Building raylib static library
+-- Generated build type: Debug
+-- Compiling with the flags:
+--   PLATFORM=PLATFORM_DESKTOP
+--   GRAPHICS=GRAPHICS_API_OPENGL_33
+-- Configuring done (0.6s)
+-- Generating done (0.2s)
+-- Build files have been written to: C:/Users/selvi/Desktop/Programming/Projects/CPP/RaylibGame/cmake-build-debug
