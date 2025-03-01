@@ -136,6 +136,7 @@ public:
     int score = 0;
     Sound eatSound;
     Sound wallSound;
+    bool gameWon = false;
 
     // Initializes sounds when Game is created
     Game() {
@@ -161,9 +162,13 @@ public:
     void Update() {
         if(running) {
             snake.Update();
-            CheckCollisionWithFood();
-            CheckCollisionWithEdges();
-            CheckCollisionWithTail();
+            if(snake.body.size() == 4) {
+                gameWon = true;
+            } else {
+                CheckCollisionWithFood();
+                CheckCollisionWithEdges();
+                CheckCollisionWithTail();
+            }
         }
     }
 
@@ -205,6 +210,22 @@ public:
         running = false;
         score = 0;
     }
+
+    // Calls GameOver and draws text onto screen over win condition
+    void GameWin() {
+        int winScore = score;
+        GameOver();
+        score = winScore;
+        DrawText("You Win!", offset+ (cellCount * cellSize / 2), (offset + cellCount * cellSize / 2), 80, darkGreen);
+    }
+
+    // Helper function, resets win and score
+    void GameSet() {
+        if(gameWon && score != 0) {
+            gameWon = false;
+            score = 0;
+        }
+    }
 };
 
 int main() {
@@ -224,24 +245,32 @@ int main() {
         if(IsKeyPressed(KEY_UP) && game.snake.direction.y != 1) {
             game.snake.direction = {0, -1};
             game.running = true;
+            game.GameSet();
         }
         if(IsKeyPressed(KEY_DOWN) && game.snake.direction.y != -1) {
             game.snake.direction = {0, 1};
             game.running = true;
+            game.GameSet();
         }
         if(IsKeyPressed(KEY_LEFT) && game.snake.direction.x != 1) {
             game.snake.direction = {-1, 0};
             game.running = true;
+            game.GameSet();
         }
         if(IsKeyPressed(KEY_RIGHT) && game.snake.direction.x != -1) {
             game.snake.direction = {1, 0};
             game.running = true;
+            game.GameSet();
         }
 
         ClearBackground(green);
         DrawRectangleLinesEx(Rectangle{(float)offset - 5, (float)offset -5, (float)cellCount*cellSize+10, (float)cellCount*cellSize+10}, 5, darkGreen);
         DrawText("Retro Snake", offset - 5, 20, 40, darkGreen);
+        if(game.gameWon) {
+            game.GameWin();
+        }
         DrawText(TextFormat("%i", game.score), offset - 5, offset + cellCount*cellSize + 10, 40, darkGreen);
+        DrawText("Controls: WASD", offset+ cellCount * cellSize - 310, offset + cellCount * cellSize+ 10, 40, darkGreen);
         game.Draw();
 
         EndDrawing();
