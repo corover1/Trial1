@@ -162,7 +162,7 @@ public:
     void Update() {
         if(running) {
             snake.Update();
-            if(snake.body.size() == 4) {
+            if(snake.body.size() == cellCount * cellCount) {
                 gameWon = true;
             } else {
                 CheckCollisionWithFood();
@@ -184,11 +184,11 @@ public:
 
     // If snake hits border game resets
     void CheckCollisionWithEdges() {
-        if(snake.body[0].x == cellCount || snake.body[0].x == -1) {
+        if(snake.body[0].x == (float)cellCount || snake.body[0].x == -1) {
             PlaySound(wallSound);
             GameOver();
         }
-        if(snake.body[0].y == cellCount || snake.body[0].y == -1) {
+        if(snake.body[0].y == (float)cellCount || snake.body[0].y == -1) {
             PlaySound(wallSound);
             GameOver();
         }
