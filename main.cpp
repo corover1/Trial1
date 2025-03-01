@@ -7,13 +7,16 @@
 Color green = {173, 204, 96, 255};
 Color darkGreen = {43, 51, 24, 255};
 
-// Number and size of cells
+// Number and size of cells in pixels
 int cellSize = 30;
 int cellCount = 25;
+// Offset size in pixels, from origin
 int offset = 75;
 
+// Var to limit how fast snake moves
 double lastUpdateTime = 0;
 
+// Searches for a element within a deque and returns true if inside, false otherwise
 bool ElementInDeque(Vector2 element, std::deque<Vector2> deque) {
 
     for(unsigned int i = 0; i < deque.size(); i++) {
@@ -24,6 +27,7 @@ bool ElementInDeque(Vector2 element, std::deque<Vector2> deque) {
     return false;
 }
 
+// If enough time has passed since last update, then trigger event
 bool eventTriggered(double interval) {
     double currentTime = GetTime();
     if (currentTime - lastUpdateTime >= interval) {
@@ -37,10 +41,14 @@ bool eventTriggered(double interval) {
 class Snake {
 public:
 
+    // Body segments stored in a deque for easy removal and insertion at both ends
     std::deque<Vector2> body = {Vector2{6,9}, Vector2{5,9}, Vector2{4,9}};
+    // Direction is a cardinal direction the snake is facing at a given instance
     Vector2 direction = {1,0};
+    // Bool for if snake eats food at a given moment
     bool addSegment = false;
 
+    // Get coords for body segments, and draws them
     void Draw() {
         for(int i = 0; i < body.size(); i++) {
             float x = body[i].x;
@@ -49,6 +57,8 @@ public:
             DrawRectangleRounded(segment, 0.75, 6, darkGreen);
         }
     }
+
+    // Update segment coords
     void Update() {
         if(addSegment) {
             addSegment = false;
@@ -58,6 +68,7 @@ public:
         body.push_front(Vector2Add(body[0], direction));
     }
 
+    // Resets to initial game state
     void Reset() {
         body = {Vector2{6, 9}, Vector2{5, 9}, Vector2{4, 9}};
         direction = {1,0};
@@ -70,6 +81,7 @@ class Food {
 public:
     // Vector2 holds an x and y value on a grid
     Vector2 position;
+    // Texture holds pixel data for an image
     Texture2D texture;
 
     // Constructor
@@ -81,6 +93,7 @@ public:
         texture = LoadTextureFromImage(image);
         // Frees memory and unloads image
         UnloadImage(image);
+        // Food generates a random pos on map
         position = GenerateRandomPos(snakeBody);
     }
 
@@ -96,15 +109,17 @@ public:
         DrawTexture(texture, offset + position.x *cellSize, offset + position.y *cellSize, WHITE);
     }
 
+    // Generates random cell on grid (coord)
     Vector2 GenerateRandomCell() {
         float x = GetRandomValue(0, cellCount-1);
         float y = GetRandomValue(0, cellCount-1);
         return Vector2{x,y};
     }
 
-    // Generate random position using raylibs random value generator
+    // Generate random position using GenerateRandomCell, and makes sure it doesn't share a coord with snake body
     Vector2 GenerateRandomPos(std::deque<Vector2> snakeBody) {
         Vector2 position = GenerateRandomCell();
+        // If shares a coord with snake, generates again until it doesn't
         while (ElementInDeque(position, snakeBody)) {
             position = GenerateRandomCell();
         }
@@ -114,6 +129,7 @@ public:
 
 class Game {
 public:
+    // Game has a snake, food, running bool, score and sounds for actions
     Snake snake = Snake();
     Food food = Food(snake.body);
     bool running = true;
@@ -121,23 +137,27 @@ public:
     Sound eatSound;
     Sound wallSound;
 
+    // Initializes sounds when Game is created
     Game() {
         InitAudioDevice();
         eatSound = LoadSound("../Sounds/SnakeEat.mp3");
         wallSound = LoadSound("../Sounds/GameStart.mp3");
     }
 
+    // Unloads sounds and frees memory
     ~Game() {
         UnloadSound(eatSound);
         UnloadSound(wallSound);
         CloseAudioDevice();
     }
 
+    // When game calls to draw, draws the food and snake
     void Draw() {
         food.Draw();
         snake.Draw();
     }
 
+    //
     void Update() {
         if(running) {
             snake.Update();
@@ -147,6 +167,7 @@ public:
         }
     }
 
+    // If snake touches food, new food pos is generated, snake elongates, score incremented and sound is played
     void CheckCollisionWithFood() {
         if(Vector2Equals(snake.body[0], food.position)) {
             food.position = food.GenerateRandomPos(snake.body);
@@ -156,6 +177,7 @@ public:
         }
     }
 
+    // If snake hits border game resets
     void CheckCollisionWithEdges() {
         if(snake.body[0].x == cellCount || snake.body[0].x == -1) {
             PlaySound(wallSound);
@@ -167,6 +189,7 @@ public:
         }
     }
 
+    // If snake hits itself game resets
     void CheckCollisionWithTail() {
         std::deque<Vector2> headlessBody = snake.body;
         headlessBody.pop_front();
@@ -175,6 +198,7 @@ public:
         }
     }
 
+    // Resets snake position and size, food gets regenerated, and score resets
     void GameOver() {
         snake.Reset();
         food.position = food.GenerateRandomPos(snake.body);
@@ -193,6 +217,7 @@ int main() {
     while(!WindowShouldClose()) {
         BeginDrawing();
 
+        // Here checks for keyboard strokes to move the snake
         if(eventTriggered(0.2)) {
             game.Update();
         }
